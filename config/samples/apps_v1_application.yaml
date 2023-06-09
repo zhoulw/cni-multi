@@ -1,0 +1,13 @@
+apiVersion: apps.zhoulw.com/v1
+kind: Application
+metadata:
+  labels:
+    app.kubernetes.io/name: application
+    app.kubernetes.io/instance: application-sample
+    app.kubernetes.io/part-of: cni-multi
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: cni-multi
+  name: application-sample
+spec:
+  name: test
+  # TODO(user): Add fields here
