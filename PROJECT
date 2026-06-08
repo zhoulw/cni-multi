@@ -8,4 +8,14 @@ layout:
 - go.kubebuilder.io/v4
 projectName: cni-multi
 repo: cni-multi
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: zlw.domain
+  group: multiapp
+  kind: BackupPolicy
+  path: cni-multi/api/v1alpha1
+  version: v1alpha1
 version: "3"

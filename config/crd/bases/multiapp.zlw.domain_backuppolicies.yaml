@@ -1,0 +1,143 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: backuppolicies.multiapp.zlw.domain
+spec:
+  group: multiapp.zlw.domain
+  names:
+    kind: BackupPolicy
+    listKind: BackupPolicyList
+    plural: backuppolicies
+    singular: backuppolicy
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: BackupPolicySpec defines the desired state of BackupPolicy
+            properties:
+              backupImage:
+                description: BackupImage is the container image that provides etcdctl;
+                  defaults to bitnami/etcd:latest
+                type: string
+              etcdEndpoint:
+                description: EtcdEndpoint is the etcd client URL, e.g. "https://127.0.0.1:2379"
+                type: string
+              etcdSecretRef:
+                description: EtcdSecretRef points to a Secret containing etcd client
+                  cert files (ca.crt, client.crt, client.key)
+                properties:
+                  name:
+                    default: ""
+                    description: |-
+                      Name of the referent.
+                      This field is effectively required, but due to backwards compatibility is
+                      allowed to be empty. Instances of this type with an empty value here are
+                      almost certainly wrong.
+                      More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                    type: string
+                type: object
+                x-kubernetes-map-type: atomic
+              nodeSelector:
+                additionalProperties:
+                  type: string
+                description: NodeSelector controls which nodes the backup Pod can
+                  run on (typically master nodes)
+                type: object
+              retentionDays:
+                default: 7
+                description: RetentionDays specifies how many days to keep backup
+                  files
+                format: int32
+                minimum: 1
+                type: integer
+              schedule:
+                description: Schedule is a cron expression, e.g. "0 2 * * *"
+                type: string
+              storagePVC:
+                description: StoragePVC is the name of an existing PVC where backup
+                  files will be stored
+                type: string
+              tolerations:
+                description: Tolerations to apply to the backup Pod
+                items:
+                  description: |-
+                    The pod this Toleration is attached to tolerates any taint that matches
+                    the triple <key,value,effect> using the matching operator <operator>.
+                  properties:
+                    effect:
+                      description: |-
+                        Effect indicates the taint effect to match. Empty means match all taint effects.
+                        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+                      type: string
+                    key:
+                      description: |-
+                        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+                        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+                      type: string
+                    operator:
+                      description: |-
+                        Operator represents a key's relationship to the value.
+                        Valid operators are Exists and Equal. Defaults to Equal.
+                        Exists is equivalent to wildcard for value, so that a pod can
+                        tolerate all taints of a particular category.
+                      type: string
+                    tolerationSeconds:
+                      description: |-
+                        TolerationSeconds represents the period of time the toleration (which must be
+                        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+                        it is not set, which means tolerate the taint forever (do not evict). Zero and
+                        negative values will be treated as 0 (evict immediately) by the system.
+                      format: int64
+                      type: integer
+                    value:
+                      description: |-
+                        Value is the taint value the toleration matches to.
+                        If the operator is Exists, the value should be empty, otherwise just a regular string.
+                      type: string
+                  type: object
+                type: array
+            required:
+            - etcdEndpoint
+            - etcdSecretRef
+            - schedule
+            - storagePVC
+            type: object
+          status:
+            description: BackupPolicyStatus defines the observed state of BackupPolicy
+            properties:
+              activeCronJob:
+                description: ActiveCronJob points to the CronJob managed by this policy
+                type: string
+              lastScheduleTime:
+                description: LastScheduleTime is the last time the CronJob was scheduled
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

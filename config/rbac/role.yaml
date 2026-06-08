@@ -1,11 +1,61 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  labels:
-    app.kubernetes.io/name: cni-multi
-    app.kubernetes.io/managed-by: kustomize
   name: manager-role
 rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "list", "watch"]
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - multiapp.zlw.domain
+  resources:
+  - backuppolicies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - multiapp.zlw.domain
+  resources:
+  - backuppolicies/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - multiapp.zlw.domain
+  resources:
+  - backuppolicies/status
+  verbs:
+  - get
+  - patch
+  - update
